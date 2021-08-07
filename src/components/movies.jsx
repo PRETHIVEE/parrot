@@ -8,10 +8,16 @@ class Movies extends Component {
   };
   handleDelete = (movie) => {
     // a new movies array should be created everytime except the movie we passed here
-    const remainingMovies = this.state.movies.filter(
-      (rm) => rm._id !== movie._id
-    );
-    this.setState({ movies: remainingMovies });
+    const removies = this.state.movies.filter((rm) => rm._id !== movie._id);
+    this.setState({ movies: removies });
+  };
+
+  handleLike = (movie) => {
+    const movies = [...this.state.movies]; //cloning all the objects
+    const index = movies.indexOf(movie); //finding the index of the object
+    movies[index] = { ...movies[index] }; // cloning the movie in that index
+    movies[index].liked = !movies[index].liked; // Updating : like become unliked vice versa
+    this.setState({ movies });
   };
 
   render() {
@@ -21,7 +27,7 @@ class Movies extends Component {
     return (
       <React.Fragment>
         <p>There are {count} movies in the database</p>
-        <table className="table">
+        <table className="table table-hover">
           <thead>
             <tr>
               <th>Title</th>
@@ -40,7 +46,10 @@ class Movies extends Component {
                 <td>{movie.numberInStock}</td>
                 <td>{movie.dailyRentalRate}</td>
                 <td>
-                  <Like />
+                  <Like
+                    liked={movie.liked}
+                    onClick={() => this.handleLike(movie)}
+                  />
                 </td>
                 <td>
                   <button
