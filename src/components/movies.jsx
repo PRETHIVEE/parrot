@@ -15,13 +15,18 @@ class Movies extends Component {
   };
 
   componentDidMount() {
-    this.setState({ movies: getMovies(), genres: getGenres() });
+    //
+    const genres = [{ name: "All Genres" }, ...getGenres()];
+
+    this.setState({ movies: getMovies(), genres: genres });
   }
 
   handleDelete = (movie) => {
     // a new movies array should be created everytime except the movie we passed here
-    const removies = this.state.movies.filter((m) => m._id !== movie._id);
-    this.setState({ movies: removies });
+    const remainingMovies = this.state.movies.filter(
+      (m) => m._id !== movie._id
+    );
+    this.setState({ movies: remainingMovies });
   };
 
   handleLike = (movie) => {
@@ -37,7 +42,6 @@ class Movies extends Component {
   };
 
   handleGenreSelect = (genre) => {
-    console.log(genre);
     this.setState({ selectedGenre: genre, currentPage: 1 }); // currentPage is given otherwise we would
   }; //empty page when page is selected at some other page
 
@@ -54,9 +58,12 @@ class Movies extends Component {
 
     // when we select a Genre  then selectedGenre becomes truthy and
     //    filter applied and shows only the movies in that Genre
-    const filtered = selectedGenre
-      ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
-      : allMovies;
+
+    // after adding ALL GENRE option we should add && selectedGenre._id because all genre has only names not id
+    const filtered =
+      selectedGenre && selectedGenre._id
+        ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
+        : allMovies;
     // paginate function is applied according to the filtered
     const movies = paginate(filtered, currentPage, pageSize);
 
