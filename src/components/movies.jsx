@@ -47,14 +47,7 @@ class Movies extends Component {
     this.setState({ selectedGenre: genre, currentPage: 1 }); // currentPage is given otherwise we would
   }; //empty page when page is selected at some other page
 
-  handleSort = (path) => {
-    const sortColumn = { ...this.state.sortColumn };
-    if (sortColumn.path === path)
-      sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
-    else {
-      sortColumn.path = path;
-      sortColumn.order = "asc";
-    }
+  handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
 
@@ -62,10 +55,10 @@ class Movies extends Component {
     const { length: count } = this.state.movies;
     const {
       pageSize,
+      sortColumn,
       currentPage,
       movies: allMovies,
       selectedGenre,
-      sortColumn,
     } = this.state;
 
     if (count === 0) return <p>There are no movies in the database</p>;
@@ -79,11 +72,7 @@ class Movies extends Component {
         ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
         : allMovies;
 
-    const sorted = _.orderBy(
-      filtered,
-      [this.state.sortColumn.path],
-      [this.state.sortColumn.order]
-    );
+    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
     const movies = paginate(sorted, currentPage, pageSize);
 
     return (
@@ -99,6 +88,7 @@ class Movies extends Component {
           <p>There are {filtered.length} movies in the database</p>
           <MoviesTable
             movies={movies}
+            sortColumn={sortColumn}
             onLike={this.handleLike}
             onDelete={this.handleDelete}
             onSort={this.handleSort}
